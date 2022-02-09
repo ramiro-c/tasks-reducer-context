@@ -24,11 +24,11 @@ const TaskList = () => {
                 <div className="text-left w-2/4">
                   <h1 className="font-semibold text-xl mb-2">{task.title}:</h1>
                   <p>{`> ${task.description}`}</p>
-                  <button
+                  Status: <button
                     className="bg-purple-600 hover:bg-purple-500 rounded py-1 px-3 mt-2"
                     onClick={() => handleToggleDoneTask(task.id)}
                   >
-                    {task.done ? "Undone" : "Done"}
+                    {task.done ? "Done" : "Undone"}
                   </button>
                 </div>
 
