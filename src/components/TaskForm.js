@@ -1,11 +1,15 @@
-import React, { useContext, useEffect, useState } from 'react';
-import { GlobalContext } from '../context/GlobalContext';
+import React, { useEffect, useState } from 'react';
 import { NotificationManager } from 'react-notifications';
 import { Link, useParams } from 'react-router-dom';
 
+import { useTasks } from "../context/Tasks/State";
+import { addTask, updateTask } from "../context/Tasks/Action";
+
 const TaskForm = () => {
+  const [tasksState, tasksDispatch] = useTasks();
+  const { tasks } = tasksState;
+
   const { taskId } = useParams();
-  const { tasks, addTask, editTask } = useContext(GlobalContext);
   const [task, setTask] = useState({});
   const [isDisabled, setIsDisabled] = useState(true);
   const [isEditing, setIsEditing] = useState(false);
@@ -14,16 +18,16 @@ const TaskForm = () => {
     setTask({ ...task, [event.target.name]: event.target.value });
   }
 
-  const handleSubmit = event => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
 
     setTask({ ...task, [event.target.name]: event.target.value });
 
     if (!isEditing) {
-      addTask(task);
+      await addTask(tasksDispatch, task);
       setTask({ title: "", description: "" })
     } else {
-      editTask(task);
+      await updateTask(tasksDispatch, task);
     }
 
     NotificationManager.success(`Task '${task.title}' ${isEditing ? "updated" : "created"}`, "Success!", 2000);
@@ -46,7 +50,7 @@ const TaskForm = () => {
         description: ""
       });
     }
-  }, [taskId, tasks]);
+  }, [taskId]);
 
   return (
     <div className="flex flex-col items-center h-3/4">
@@ -77,13 +81,18 @@ const TaskForm = () => {
           ></textarea>
         </div>
         <button
-          className={`rounded bg-green-600 w-full py-2 px-4 mt-5 ${isDisabled ? 'opacity-75 cursor-not-allowed' : 'hover:bg-green-500'}`}
+          className={`
+            rounded bg-green-600 w-full py-2 px-4 mt-5
+            ${isDisabled ? 'opacity-75 cursor-not-allowed' : 'hover:bg-green-500'}
+          `}
           disabled={isDisabled}
         >
           {isEditing ? "Edit" : "Create"} Task
         </button>
       </form>
-      <Link to="/" className="py-2 px-4 rounded bg-green-600 hover:bg-green-500">See all tasks</Link>
+      <Link to="/" className="py-2 px-4 rounded bg-green-600 hover:bg-green-500">
+        See all tasks
+      </Link>
     </div >
   )
 }

@@ -1,17 +1,28 @@
-import React, { useContext } from 'react';
+import React, { useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { GlobalContext as context } from "../context/GlobalContext";
+
+import { useTasks } from "../context/Tasks/State";
+import { getTasks, deleteTask, updateTask } from "../context/Tasks/Action";
 
 const TaskList = () => {
-  const { tasks, toggleDoneTask, deleteTask } = useContext(context);
+  const [tasksState, tasksDispatch] = useTasks();
+  const { tasks } = tasksState;
 
-  const handleDelete = (taskId) => {
-    deleteTask(taskId);
+  const handleDelete = async (taskId) => {
+    await deleteTask(tasksDispatch, taskId);
   }
 
-  const handleToggleDoneTask = (taskId) => {
-    toggleDoneTask(taskId);
+  const handleToggleDoneTask = async (task) => {
+    await updateTask(tasksDispatch, { ...task, done: !task.done });
   }
+
+  const fetchTasks = async () => {
+    await getTasks(tasksDispatch);
+  }
+
+  useEffect(() => {
+    fetchTasks();
+  }, []);
 
   return (
     <div className="flex justify-center">
@@ -26,7 +37,7 @@ const TaskList = () => {
                   <p>{`> ${task.description}`}</p>
                   Status: <button
                     className="bg-purple-600 hover:bg-purple-500 rounded py-1 px-3 mt-2"
-                    onClick={() => handleToggleDoneTask(task.id)}
+                    onClick={() => handleToggleDoneTask(task)}
                   >
                     {task.done ? "Done" : "Undone"}
                   </button>
