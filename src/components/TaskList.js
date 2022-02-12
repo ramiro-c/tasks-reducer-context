@@ -26,7 +26,7 @@ const TaskList = () => {
 
   return (
     <div className="flex justify-center">
-      <div className="w-6/12">
+      <div className="w-6/12 mb-20">
         {tasks.length === 0
           ? <p className="text-2xl mt-24">No tasks yet!</p>
           : (
